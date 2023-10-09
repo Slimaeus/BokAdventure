@@ -10,4 +10,6 @@ public sealed class Player : BaseAuditableEntity
     public int RequiredExperience { get; set; } = ExperienceCalculator.CalculateRequiredExperience(1);
     public Guid? ApplicationUserId { get; set; }
     public ApplicationUser? ApplicationUser { get; set; }
+
+    public ICollection<Bok> Boks { get; set; } = new List<Bok>();
 }
