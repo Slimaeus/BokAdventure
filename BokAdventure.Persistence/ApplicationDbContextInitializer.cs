@@ -1,4 +1,7 @@
 ﻿namespace BokAdventure.Persistence;
+
+using BokAdventure.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetCore.AutoRegisterDi;
 using Serilog;
@@ -7,9 +10,14 @@ using Serilog;
 public class ApplicationDbContextInitializer
 {
     private readonly ApplicationDbContext _applicationDbContext;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ApplicationDbContextInitializer(ApplicationDbContext applicationDbContext)
-        => _applicationDbContext = applicationDbContext;
+    public ApplicationDbContextInitializer(ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager)
+    {
+        _applicationDbContext = applicationDbContext;
+        _userManager = userManager;
+    }
+
     public async Task InitialiseAsync()
     {
         try
@@ -34,8 +42,30 @@ public class ApplicationDbContextInitializer
         }
     }
 
-    public Task TrySeedAsync()
+    public async Task TrySeedAsync()
     {
-        return Task.CompletedTask;
+        if (await _userManager.Users.AnyAsync()
+            || await _applicationDbContext.Players.AnyAsync())
+            return;
+
+        var thai = new ApplicationUser
+        {
+            UserName = "thai",
+            Email = "thai@gmail.com",
+        };
+
+        await _userManager.CreateAsync(thai, "P@ssw0rd");
+
+        var player = new Player
+        {
+            ApplicationUserId = thai.Id,
+            BokCoins = 1000000
+        };
+
+        await _applicationDbContext
+            .AddAsync(player);
+
+        await _applicationDbContext
+            .SaveChangesAsync().ConfigureAwait(false);
     }
 }

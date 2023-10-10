@@ -16,6 +16,24 @@ public class Players : ICarterModule
 
         group.MapGet("", Get);
         group.MapPost("register", Register);
+        group.MapPost("add-exp/{id:guid}", AddExp);
+    }
+
+    private async Task<NoContent> AddExp(
+        ApplicationDbContext applicationDbContext,
+        Guid id,
+        int amount,
+        CancellationToken cancellationToken)
+    {
+        var player = await applicationDbContext.Players
+            .FindAsync(new object?[] { id }, cancellationToken: cancellationToken)
+            ?? throw new Exception("Player not found");
+
+        player.Experience += amount;
+
+        await applicationDbContext.SaveChangesAsync(cancellationToken);
+
+        return TypedResults.NoContent();
     }
     private Task<Ok<ImmutableList<Player>>> Get(
         ApplicationDbContext applicationDbContext)
