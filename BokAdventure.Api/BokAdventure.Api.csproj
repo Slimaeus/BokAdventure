@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
     <PackageReference Include="Carter" Version="7.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.11" />
@@ -25,6 +26,10 @@
     <ProjectReference Include="..\BokAdventure.Application\BokAdventure.Application.csproj" />
     <ProjectReference Include="..\BokAdventure.Infrastructure\BokAdventure.Infrastructure.csproj" />
     <ProjectReference Include="..\BokAdventure.Persistence\BokAdventure.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\v2\" />
   </ItemGroup>
 
 </Project>

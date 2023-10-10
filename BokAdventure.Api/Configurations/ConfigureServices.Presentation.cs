@@ -1,7 +1,11 @@
-﻿using Carter;
+﻿using Asp.Versioning;
+using BokAdventure.Infrastructure.Swagger;
+using Carter;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using NetCore.AutoRegisterDi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,8 +17,23 @@ public static partial class ConfigureServices
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddEndpointsApiExplorer();
+        services.AddApiVersioning(options =>
+        {
+            options.ReportApiVersions = true;
+            options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            options.AssumeDefaultVersionWhenUnspecified = true;
+        })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddSwaggerGen(options =>
         {
+            options.OperationFilter<SwaggerDefaultValues>();
             var securitySchema = new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -59,12 +78,6 @@ public static partial class ConfigureServices
     public static WebApplication UsePresentationServices(this WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
-            options.InjectStylesheet("/swagger/custom.css");
-            options.EnableTryItOutByDefault();
-        });
 
         const string CustomStyles = @"
             .swagger-ui .opblock .opblock-summary .view-line-link {
@@ -72,12 +85,35 @@ public static partial class ConfigureServices
                 width: 24px;
             }";
 
-        app.MapGet("/swagger/custom.css", () => Results.Text(CustomStyles, "text/css", Encoding.UTF8)).ExcludeFromDescription();
+        app.MapGet("/swagger/custom.css", () => Results.Text(CustomStyles, "text/css", Encoding.UTF8))
+            .ExcludeFromDescription();
 
         app.MapCarter();
 
         app.UseHttpsRedirection();
 
+
+        // Let's the Swagger UI before app.Run() to avoid missing another versions
+        app.UseSwaggerUI(options =>
+        {
+            var descriptions = app.DescribeApiVersions();
+
+            // build a swagger endpoint for each discovered API version
+            foreach (var description in descriptions)
+            {
+                var url = $"/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                options.SwaggerEndpoint(url, name);
+            }
+
+            options.InjectStylesheet("/swagger/custom.css");
+
+            options.EnableDeepLinking();
+            options.EnableFilter();
+            options.EnablePersistAuthorization();
+            options.EnableValidator();
+            options.EnableTryItOutByDefault();
+        });
         return app;
     }
 }

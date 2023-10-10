@@ -12,11 +12,20 @@ public class Players : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/v1/Players");
 
-        group.MapGet("", Get);
-        group.MapPost("register", Register);
-        group.MapPost("add-exp/{id:guid}", AddExp);
+        var versionSet = app.NewApiVersionSet()
+            .Build();
+
+        var group = app.MapGroup("api/v{version:apiVersion}/Players")
+            .WithApiVersionSet(versionSet);
+
+        var random = new Random();
+
+        var version = random.Next(2, 234);
+
+        group.MapGet("", Get).HasApiVersion(1).HasApiVersion(version);
+        group.MapPost("register", Register).HasApiVersion(1).HasApiVersion(version);
+        group.MapPost("add-exp/{id:guid}", AddExp).HasApiVersion(1).HasApiVersion(version);
     }
 
     private async Task<NoContent> AddExp(
@@ -44,8 +53,8 @@ public class Players : ICarterModule
     private async Task<Results<Ok<Guid>, BadRequest>> Register(
         ApplicationDbContext applicationDbContext,
         UserManager<ApplicationUser> userManager,
-        CancellationToken cancellationToken,
-        RegisterPlayerDto request)
+        RegisterPlayerDto request,
+        CancellationToken cancellationToken)
     {
         var user = new ApplicationUser
         {
