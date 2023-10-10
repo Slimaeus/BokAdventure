@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using NetCore.AutoRegisterDi;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BokAdventure.Api.Configurations;
 
@@ -43,6 +44,7 @@ public static partial class ConfigureServices
         services.Configure<JsonOptions>(options =>
         {
             options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
 
         services.AddCarter();
