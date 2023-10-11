@@ -16,16 +16,18 @@ public class Players : ICarterModule
         var versionSet = app.NewApiVersionSet()
             .Build();
 
-        var group = app.MapGroup("api/v{version:apiVersion}/Players")
-            .WithApiVersionSet(versionSet);
-
         var random = new Random();
-
         var version = random.Next(2, 234);
 
-        group.MapGet("", Get).HasApiVersion(1).HasApiVersion(version);
-        group.MapPost("register", Register).HasApiVersion(1).HasApiVersion(version);
-        group.MapPost("add-exp/{id:guid}", AddExp).HasApiVersion(1).HasApiVersion(version);
+        var group = app.MapGroup("api/v{version:apiVersion}/Players")
+            .WithApiVersionSet(versionSet)
+            .HasApiVersion(1)
+            .HasApiVersion(version);
+
+
+        group.MapGet("", Get);
+        group.MapPost("register", Register);
+        group.MapPost("add-exp/{id:guid}", AddExp);
     }
 
     private async Task<NoContent> AddExp(
