@@ -8,9 +8,5 @@ public class BokConfiguration : IEntityTypeConfiguration<Bok>
 {
     public void Configure(EntityTypeBuilder<Bok> builder)
     {
-        builder
-            .HasOne(b => b.Player)
-            .WithMany(p => p.Boks)
-            .HasForeignKey(b => b.PlayerId);
     }
 }

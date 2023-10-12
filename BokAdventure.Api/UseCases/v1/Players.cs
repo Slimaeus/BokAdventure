@@ -77,7 +77,7 @@ public class Players : ICarterModule
         };
 
         await applicationDbContext.Players
-            .AddAsync(player);
+            .AddAsync(player, cancellationToken);
 
         var saveSuccess = await applicationDbContext
             .SaveChangesAsync(cancellationToken) > 0;
