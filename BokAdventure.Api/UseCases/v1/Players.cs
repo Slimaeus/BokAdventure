@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 
 namespace BokAdventure.Api.UseCases.v1;
 
-public class Players : ICarterModule
+public sealed class Players : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {

@@ -1,6 +1,7 @@
 ﻿namespace BokAdventure.Persistence;
 
 using BokAdventure.Domain.Entities;
+using BokAdventure.Domain.Enumerations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetCore.AutoRegisterDi;
@@ -45,6 +46,7 @@ public class ApplicationDbContextInitializer
     public async Task TrySeedAsync()
     {
         if (await _userManager.Users.AnyAsync()
+            || await _applicationDbContext.Boks.AnyAsync()
             || await _applicationDbContext.Players.AnyAsync())
             return;
 
@@ -64,6 +66,45 @@ public class ApplicationDbContextInitializer
 
         await _applicationDbContext
             .AddAsync(player);
+
+        var boks = new List<Bok>
+        {
+            new Bok
+            {
+                Type = BokType.AspNetCore
+            },
+            new Bok
+            {
+                Type = BokType.React
+            },
+            new Bok
+            {
+                Type = BokType.Flutter
+            },
+            new Bok
+            {
+                Type = BokType.PostgreSQL
+            },
+            new Bok
+            {
+                Type = BokType.MongoDB
+            },
+            new Bok
+            {
+                Type = BokType.Firebase
+            },
+            new Bok
+            {
+                Type = BokType.Redis
+            },
+            new Bok
+            {
+                Type = BokType.RabbitMQ
+            }
+        };
+
+        await _applicationDbContext
+            .AddRangeAsync(boks);
 
         await _applicationDbContext
             .SaveChangesAsync().ConfigureAwait(false);

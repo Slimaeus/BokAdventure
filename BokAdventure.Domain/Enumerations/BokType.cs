@@ -7,6 +7,7 @@ public enum BokType
     React,
     PostgreSQL,
     MongoDB,
+    Firebase,
     Redis,
     RabbitMQ
 }
