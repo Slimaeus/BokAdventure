@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Asp.Versioning.Builder;
 using BokAdventure.Infrastructure.Swagger;
 using Carter;
 using Microsoft.AspNetCore.Http.Json;
@@ -29,6 +30,8 @@ public static partial class ConfigureServices
 
                 options.SubstituteApiVersionInUrl = true;
             });
+
+        services.AddAuthorization();
 
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddSwaggerGen(options =>
@@ -73,6 +76,8 @@ public static partial class ConfigureServices
             Application.AssemblyReference.Assembly,
             Infrastructure.AssemblyReference.Assembly);
 
+        services.AddSingleton(sp => new ApiVersionSetBuilder("BokApi").Build());
+
         return services;
     }
     public static WebApplication UsePresentationServices(this WebApplication app)
@@ -92,6 +97,9 @@ public static partial class ConfigureServices
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
+
+        app.UseAuthorization();
 
         // Let's the Swagger UI before app.Run() to avoid missing another versions
         app.UseSwaggerUI(options =>

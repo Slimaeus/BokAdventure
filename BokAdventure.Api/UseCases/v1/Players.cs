@@ -1,4 +1,5 @@
-﻿using BokAdventure.Application.Players.Dtos;
+﻿using Asp.Versioning.Builder;
+using BokAdventure.Application.Players.Dtos;
 using BokAdventure.Domain.Entities;
 using BokAdventure.Persistence;
 using Carter;
@@ -10,6 +11,10 @@ namespace BokAdventure.Api.UseCases.v1;
 
 public sealed class Players : ICarterModule
 {
+    private readonly ApiVersionSet _apiVersionSet;
+
+    public Players(ApiVersionSet apiVersionSet)
+        => _apiVersionSet = apiVersionSet;
     public void AddRoutes(IEndpointRouteBuilder app)
     {
 
@@ -20,7 +25,8 @@ public sealed class Players : ICarterModule
         var version = random.Next(2, 234);
 
         var group = app.MapGroup("api/v{version:apiVersion}/Players")
-            .WithApiVersionSet(versionSet)
+            .WithTags(nameof(Players))
+            .WithApiVersionSet(_apiVersionSet)
             .HasApiVersion(1)
             .HasApiVersion(version);
 

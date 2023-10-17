@@ -1,7 +1,11 @@
 ﻿using BokAdventure.Domain.Entities;
+using BokAdventure.Domain.Interfaces;
+using BokAdventure.Infrastructure.Authentication.Token;
+using BokAdventure.Infrastructure.Constants;
 using BokAdventure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -35,7 +39,11 @@ public static partial class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]!));
+        services.Configure<TokenSettings>(configuration.GetSection(InfrastructureConstants.TokenSettingsSection));
+
+        var tokenKey = services.BuildServiceProvider().GetRequiredService<IOptions<TokenSettings>>().Value.TokenKey;
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -50,6 +58,9 @@ public static partial class ConfigureServices
                     ClockSkew = TimeSpan.FromSeconds(5)
                 };
             });
+
+        services.AddTransient<ITokenService, TokenService>();
+
         return services;
     }
 }
