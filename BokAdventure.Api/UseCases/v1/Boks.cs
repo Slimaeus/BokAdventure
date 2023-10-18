@@ -28,10 +28,14 @@ public sealed class Boks : ICarterModule
             .HasApiVersion(version);
 
         group.MapGet("", Get);
+        group.MapGet("{id:guid}", GetById);
     }
-    public async Task<Ok<ImmutableList<Bok>>> Get(
+    public Ok<ImmutableList<Bok>> Get(
         ApplicationDbContext appllicationDbContext)
-    {
-        return TypedResults.Ok(appllicationDbContext.Boks.ToImmutableList());
-    }
+        => TypedResults.Ok(appllicationDbContext.Boks.ToImmutableList());
+
+    public async Task<Ok<Bok>> GetById(
+        ApplicationDbContext appllicationDbContext,
+        Guid id)
+        => TypedResults.Ok(await appllicationDbContext.Boks.FindAsync(id));
 }
