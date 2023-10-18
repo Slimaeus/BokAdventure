@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning.Builder;
 using BokAdventure.Application.Players.Dtos;
+using BokAdventure.Domain.Common;
 using BokAdventure.Domain.Entities;
+using BokAdventure.Domain.Enumerations;
 using BokAdventure.Domain.Helpers;
 using BokAdventure.Persistence;
 using Carter;
@@ -34,7 +36,7 @@ public sealed class Players : ICarterModule
 
 
         group.MapGet("", Get);
-        group.MapPost("{id:guid}/add-bok/{bokId:guid}/{amount}", AddBok);
+        group.MapPost("{id:guid}/add-bok/{bokId}/{amount}", AddBok);
         group.MapPost("register", Register);
         group.MapPost("add-exp/{id:guid}", AddExp);
     }
@@ -59,7 +61,7 @@ public sealed class Players : ICarterModule
     private async Task<NoContent> AddBok(
         ApplicationDbContext applicationDbContext,
         Guid id,
-        Guid bokId,
+        BokIdentify bokId,
         ulong amount,
         CancellationToken cancellationToken
         )
@@ -93,7 +95,7 @@ public sealed class Players : ICarterModule
 
         return TypedResults.NoContent();
     }
-    private async Task<Ok<ImmutableList<PlayerDto>>> Get(
+    private async Task<Ok<BokFlow<ImmutableList<PlayerDto>>>> Get(
         ApplicationDbContext applicationDbContext)
     {
         var players = applicationDbContext.Players
@@ -121,7 +123,12 @@ public sealed class Players : ICarterModule
                 x.Hp, x.Atk, x.Def))
             .ToList();
 
-        return TypedResults.Ok(playerDtos.ToImmutableList());
+        var bokFlow = BokFlow<ImmutableList<PlayerDto>>.Create(playerDtos.ToImmutableList());
+        var bokInFlow = await applicationDbContext.Boks.SingleOrDefaultAsync(x => x.Id == BokIdentify.ASPNET)
+            ?? throw new Exception();
+        bokFlow.Boks.Add(bokInFlow);
+
+        return TypedResults.Ok(bokFlow);
     }
 
     private async Task<Results<Ok<Guid>, BadRequest>> Register(

@@ -72,7 +72,8 @@ public class ApplicationDbContextInitializer
         {
             new Bok
             {
-                Name = "ASP.NET",
+                Id = BokIdentify.ASPNET,
+                Name = nameof(BokIdentify.ASPNET),
                 Type = BokType.Server,
                 HitPoints = 0,
                 Attack = 1,
@@ -80,7 +81,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "PostgreSQL",
+                Id = BokIdentify.PostgreSQL,
+                Name = nameof(BokIdentify.PostgreSQL),
                 Type = BokType.Database,
                 HitPoints = 1,
                 Attack = 0,
@@ -88,7 +90,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "Flutter",
+                Id = BokIdentify.Flutter,
+                Name = nameof(BokIdentify.Flutter),
                 Type = BokType.Client,
                 HitPoints = 0,
                 Attack = 0,
@@ -96,7 +99,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "MongoDB",
+                Id = BokIdentify.MongoDB,
+                Name = nameof(BokIdentify.MongoDB),
                 Type = BokType.Client,
                 HitPoints = 1,
                 Attack = 0,
@@ -104,7 +108,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "C#",
+                Id = BokIdentify.CSharp,
+                Name = nameof(BokIdentify.CSharp),
                 Type = BokType.Language,
                 HitPoints = 0,
                 Attack = 1,
@@ -112,7 +117,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "Dart",
+                Id = BokIdentify.Dart,
+                Name = nameof(BokIdentify.Dart),
                 Type = BokType.Language,
                 HitPoints = 0,
                 Attack = 0,
@@ -120,7 +126,8 @@ public class ApplicationDbContextInitializer
             },
             new Bok
             {
-                Name = "TypeScript",
+                Id = BokIdentify.TypeScript,
+                Name = nameof(BokIdentify.TypeScript),
                 Type = BokType.Language,
                 HitPoints = 0,
                 Attack = 0,

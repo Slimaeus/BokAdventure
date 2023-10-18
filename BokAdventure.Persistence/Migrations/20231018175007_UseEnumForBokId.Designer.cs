@@ -3,6 +3,7 @@ using System;
 using BokAdventure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BokAdventure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231018175007_UseEnumForBokId")]
+    partial class UseEnumForBokId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
@@ -135,10 +138,6 @@ namespace BokAdventure.Persistence.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
@@ -193,15 +192,18 @@ namespace BokAdventure.Persistence.Migrations
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("BokId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid?>("BokId")
+                        .HasColumnType("TEXT");
 
                     b.Property<ulong>("Amount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("BokId1")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("PlayerId", "BokId");
 
-                    b.HasIndex("BokId");
+                    b.HasIndex("BokId1");
 
                     b.ToTable("PlayerBok");
                 });
@@ -318,9 +320,7 @@ namespace BokAdventure.Persistence.Migrations
                 {
                     b.HasOne("BokAdventure.Domain.Entities.Bok", "Bok")
                         .WithMany()
-                        .HasForeignKey("BokId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BokId1");
 
                     b.HasOne("BokAdventure.Domain.Entities.Player", "Player")
                         .WithMany("PlayerBoks")

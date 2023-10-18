@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning.Builder;
 using BokAdventure.Domain.Entities;
+using BokAdventure.Domain.Enumerations;
 using BokAdventure.Persistence;
 using Carter;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -28,7 +29,7 @@ public sealed class Boks : ICarterModule
             .HasApiVersion(version);
 
         group.MapGet("", Get);
-        group.MapGet("{id:guid}", GetById);
+        group.MapGet("{id}", GetById);
     }
     public Ok<ImmutableList<Bok>> Get(
         ApplicationDbContext appllicationDbContext)
@@ -36,6 +37,6 @@ public sealed class Boks : ICarterModule
 
     public async Task<Ok<Bok>> GetById(
         ApplicationDbContext appllicationDbContext,
-        Guid id)
+        BokIdentify id)
         => TypedResults.Ok(await appllicationDbContext.Boks.FindAsync(id));
 }
