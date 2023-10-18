@@ -13,10 +13,7 @@ public class AfterSavePlayerTrigger : IAfterSaveTrigger<Player>
     {
         if (context.ChangeType != ChangeType.Modified) return;
 
-        //if (context.UnmodifiedEntity is null) return;
-
         var player = context.Entity;
-        //var oldPlayer = context.UnmodifiedEntity;
 
         if (player.Experience < player.RequiredExperience) return;
 
@@ -27,6 +24,7 @@ public class AfterSavePlayerTrigger : IAfterSaveTrigger<Player>
         {
             upLevelCount++;
             player.Level++;
+            player.Experience -= player.RequiredExperience;
             player.RequiredExperience = ExperienceCalculator.CalculateRequiredExperience(player.Level);
         }
 

@@ -93,10 +93,16 @@ public sealed class Players : ICarterModule
         await applicationDbContext
             .SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        var bokFlow = BokFlow<object>.NoDataCreate();
+        var bokInFlow = await applicationDbContext.Boks.SingleOrDefaultAsync(x => x.Id == BokIdentify.ASPNET, cancellationToken)
+            ?? throw new Exception();
+        bokFlow.AddBok(bokInFlow);
+
         return TypedResults.NoContent();
     }
     private async Task<Ok<BokFlow<ImmutableList<PlayerDto>>>> Get(
-        ApplicationDbContext applicationDbContext)
+        ApplicationDbContext applicationDbContext,
+        CancellationToken cancellationToken)
     {
         var players = applicationDbContext.Players
             .Include(x => x.PlayerBoks)
@@ -124,9 +130,9 @@ public sealed class Players : ICarterModule
             .ToList();
 
         var bokFlow = BokFlow<ImmutableList<PlayerDto>>.Create(playerDtos.ToImmutableList());
-        var bokInFlow = await applicationDbContext.Boks.SingleOrDefaultAsync(x => x.Id == BokIdentify.ASPNET)
+        var bokInFlow = await applicationDbContext.Boks.SingleOrDefaultAsync(x => x.Id == BokIdentify.ASPNET, cancellationToken)
             ?? throw new Exception();
-        bokFlow.Boks.Add(bokInFlow);
+        bokFlow.AddBok(bokInFlow);
 
         return TypedResults.Ok(bokFlow);
     }

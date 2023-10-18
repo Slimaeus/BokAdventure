@@ -10,4 +10,14 @@ public sealed class BokFlow<TResult>
     public static BokFlow<TResult> Create(TResult data)
         => new()
         { Data = data };
+    public static BokFlow<TResult> NoDataCreate()
+    => new();
+
+    public void AddBok(Bok bok)
+    {
+        if (!Boks.Any(x => x.Id == bok.Id))
+        {
+            Boks.Add(bok);
+        }
+    }
 }
