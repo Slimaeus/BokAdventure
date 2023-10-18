@@ -5,12 +5,12 @@ public static class ExperienceCalculator
     private const double _baseExperience = 100; // Base experience required for level 1
     private const double _experienceGrowthFactor = 1.2; // Experience required multiplier for each level increase
 
-    public static int CalculateRequiredExperience(int currentLevel)
+    public static ulong CalculateRequiredExperience(ulong currentLevel)
     {
         // Calculate required experience for the next level using exponential growth formula
         double requiredExperience = _baseExperience * Math.Pow(_experienceGrowthFactor, currentLevel - 1);
 
         // Round up the required experience to the nearest integer
-        return (int)Math.Ceiling(requiredExperience);
+        return (ulong)Math.Ceiling(requiredExperience);
     }
 }

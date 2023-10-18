@@ -7,5 +7,5 @@ public sealed class PlayerBok
     public Guid? BokId { get; set; }
     public Bok? Bok { get; set; }
 
-    public int Amount { get; set; }
+    public ulong Amount { get; set; } = 0;
 }

@@ -20,11 +20,17 @@ public class AfterSavePlayerTrigger : IAfterSaveTrigger<Player>
 
         if (player.Experience < player.RequiredExperience) return;
 
+        var upLevelCount = 0;
+        var numberOfStatPointEachUpLevel = 2;
+
         while (player.Experience >= player.RequiredExperience)
         {
+            upLevelCount++;
             player.Level++;
             player.RequiredExperience = ExperienceCalculator.CalculateRequiredExperience(player.Level);
         }
+
+        player.StatPoints += upLevelCount * numberOfStatPointEachUpLevel;
 
         _applicationDbContext.Update(player);
 

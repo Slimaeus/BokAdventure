@@ -1,10 +1,12 @@
 ﻿using Asp.Versioning.Builder;
 using BokAdventure.Application.Players.Dtos;
 using BokAdventure.Domain.Entities;
+using BokAdventure.Domain.Helpers;
 using BokAdventure.Persistence;
 using Carter;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
 
 namespace BokAdventure.Api.UseCases.v1;
@@ -32,6 +34,7 @@ public sealed class Players : ICarterModule
 
 
         group.MapGet("", Get);
+        group.MapPost("{id:guid}/add-bok/{bokId:guid}/{amount}", AddBok);
         group.MapPost("register", Register);
         group.MapPost("add-exp/{id:guid}", AddExp);
     }
@@ -39,7 +42,7 @@ public sealed class Players : ICarterModule
     private async Task<NoContent> AddExp(
         ApplicationDbContext applicationDbContext,
         Guid id,
-        int amount,
+        ulong amount,
         CancellationToken cancellationToken)
     {
         var player = await applicationDbContext.Players
@@ -48,14 +51,77 @@ public sealed class Players : ICarterModule
 
         player.Experience += amount;
 
-        await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationDbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }
-    private Task<Ok<ImmutableList<Player>>> Get(
+
+    private async Task<NoContent> AddBok(
+        ApplicationDbContext applicationDbContext,
+        Guid id,
+        Guid bokId,
+        ulong amount,
+        CancellationToken cancellationToken
+        )
+    {
+        var player = await applicationDbContext.Players
+            .Include(x => x.PlayerBoks)
+            .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+            ?? throw new Exception("Player not found");
+
+        var bok = await applicationDbContext.Boks
+            .FindAsync(new object?[] { bokId }, cancellationToken: cancellationToken)
+            ?? throw new Exception("Bok not found");
+
+        var playerBok = player.PlayerBoks.SingleOrDefault(x => x.BokId == bokId);
+        if (playerBok is null)
+        {
+            player.PlayerBoks.Add(new PlayerBok
+            {
+                PlayerId = id,
+                BokId = bokId,
+                Amount = amount
+            });
+        }
+        else
+        {
+            playerBok.Amount += amount;
+        }
+
+        await applicationDbContext
+            .SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.NoContent();
+    }
+    private async Task<Ok<ImmutableList<PlayerDto>>> Get(
         ApplicationDbContext applicationDbContext)
     {
-        return Task.FromResult(TypedResults.Ok(applicationDbContext.Players.ToImmutableList()));
+        var players = applicationDbContext.Players
+            .Include(x => x.PlayerBoks)
+            .ThenInclude(x => x.Bok);
+
+        var playerDtos = (await players
+            .ToListAsync())
+            .Select(x => new
+            {
+                Player = x,
+                Hp = PowerCalculator.CalculateHitPoints(x.HitPoints, x.PlayerBoks
+                    ?? Enumerable.Empty<PlayerBok>()),
+                Atk = PowerCalculator.CalculateAttack(x.Attack, x.PlayerBoks
+                    ?? Enumerable.Empty<PlayerBok>()),
+                Def = PowerCalculator.CalculateDefence(x.Defence, x.PlayerBoks
+                    ?? Enumerable.Empty<PlayerBok>())
+            })
+            .Select(x => new PlayerDto(
+                x.Player.Id,
+                x.Player.Level,
+                x.Player.Experience,
+                x.Player.BokCoins,
+                x.Player.BokBank,
+                x.Hp, x.Atk, x.Def))
+            .ToList();
+
+        return TypedResults.Ok(playerDtos.ToImmutableList());
     }
 
     private async Task<Results<Ok<Guid>, BadRequest>> Register(

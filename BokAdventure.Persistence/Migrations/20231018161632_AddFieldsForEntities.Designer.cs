@@ -3,6 +3,7 @@ using System;
 using BokAdventure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BokAdventure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231018161632_AddFieldsForEntities")]
+    partial class AddFieldsForEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
@@ -191,7 +194,7 @@ namespace BokAdventure.Persistence.Migrations
                     b.Property<Guid?>("BokId")
                         .HasColumnType("TEXT");
 
-                    b.Property<ulong>("Amount")
+                    b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("PlayerId", "BokId");

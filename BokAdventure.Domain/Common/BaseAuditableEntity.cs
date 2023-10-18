@@ -11,3 +11,8 @@ public abstract class BaseAuditableEntity : BaseEntity<Guid>
 {
     public override Guid Id { get; protected set; } = Guid.NewGuid();
 }
+
+public abstract class BaseIntKeyAuditableEntity : BaseEntity<int>
+{
+    public override int Id { get; protected set; }
+}

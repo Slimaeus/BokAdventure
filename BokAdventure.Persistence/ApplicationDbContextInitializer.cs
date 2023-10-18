@@ -58,48 +58,73 @@ public class ApplicationDbContextInitializer
 
         await _userManager.CreateAsync(thai, "P@ssw0rd");
 
-        var player = new Player
+        var thaiPlayer = new Player
         {
             ApplicationUserId = thai.Id,
-            BokCoins = 1000000
+            BokCoins = 1000000,
+            ApplicationUser = thai,
         };
 
         await _applicationDbContext
-            .AddAsync(player);
+            .AddAsync(thaiPlayer);
 
         var boks = new List<Bok>
         {
             new Bok
             {
-                Type = BokType.AspNetCore
+                Name = "ASP.NET",
+                Type = BokType.Server,
+                HitPoints = 0,
+                Attack = 1,
+                Defence = 0,
             },
             new Bok
             {
-                Type = BokType.React
+                Name = "PostgreSQL",
+                Type = BokType.Database,
+                HitPoints = 1,
+                Attack = 0,
+                Defence = 0,
             },
             new Bok
             {
-                Type = BokType.Flutter
+                Name = "Flutter",
+                Type = BokType.Client,
+                HitPoints = 0,
+                Attack = 0,
+                Defence = 1,
             },
             new Bok
             {
-                Type = BokType.PostgreSQL
+                Name = "MongoDB",
+                Type = BokType.Client,
+                HitPoints = 1,
+                Attack = 0,
+                Defence = 0,
             },
             new Bok
             {
-                Type = BokType.MongoDB
+                Name = "C#",
+                Type = BokType.Language,
+                HitPoints = 0,
+                Attack = 1,
+                Defence = 0,
             },
             new Bok
             {
-                Type = BokType.Firebase
+                Name = "Dart",
+                Type = BokType.Language,
+                HitPoints = 0,
+                Attack = 0,
+                Defence = 1,
             },
             new Bok
             {
-                Type = BokType.Redis
-            },
-            new Bok
-            {
-                Type = BokType.RabbitMQ
+                Name = "TypeScript",
+                Type = BokType.Language,
+                HitPoints = 0,
+                Attack = 0,
+                Defence = 1,
             }
         };
 

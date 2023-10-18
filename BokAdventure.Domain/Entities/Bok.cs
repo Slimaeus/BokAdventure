@@ -5,5 +5,9 @@ namespace BokAdventure.Domain.Entities;
 
 public class Bok : BaseAuditableEntity
 {
+    public string Name { get; set; } = string.Empty;
     public BokType Type { get; set; }
+    public ulong HitPoints { get; set; } = 10;
+    public long Defence { get; set; } = 1;
+    public long Attack { get; set; } = 1;
 }
