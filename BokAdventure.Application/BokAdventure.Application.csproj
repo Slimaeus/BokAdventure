@@ -7,7 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Players\Commands\" />
     <Folder Include="Users\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.8.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BokAdventure.Domain\BokAdventure.Domain.csproj" />
+    <ProjectReference Include="..\BokAdventure.Persistence\BokAdventure.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

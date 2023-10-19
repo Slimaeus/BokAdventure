@@ -1,15 +1,15 @@
 ﻿using Asp.Versioning.Builder;
 using BokAdventure.Application.Players.Dtos;
+using BokAdventure.Application.Players.Queries.GetPlayers;
 using BokAdventure.Domain.Common;
 using BokAdventure.Domain.Entities;
 using BokAdventure.Domain.Enumerations;
-using BokAdventure.Domain.Helpers;
 using BokAdventure.Persistence;
 using Carter;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
 
 namespace BokAdventure.Api.UseCases.v1;
 
@@ -100,42 +100,9 @@ public sealed class Players : ICarterModule
 
         return TypedResults.NoContent();
     }
-    private async Task<Ok<BokFlow<ImmutableList<PlayerDto>>>> Get(
-        ApplicationDbContext applicationDbContext,
-        CancellationToken cancellationToken)
-    {
-        var players = applicationDbContext.Players
-            .Include(x => x.PlayerBoks)
-            .ThenInclude(x => x.Bok);
-
-        var playerDtos = (await players
-            .ToListAsync())
-            .Select(x => new
-            {
-                Player = x,
-                Hp = PowerCalculator.CalculateHitPoints(x.HitPoints, x.PlayerBoks
-                    ?? Enumerable.Empty<PlayerBok>()),
-                Atk = PowerCalculator.CalculateAttack(x.Attack, x.PlayerBoks
-                    ?? Enumerable.Empty<PlayerBok>()),
-                Def = PowerCalculator.CalculateDefence(x.Defence, x.PlayerBoks
-                    ?? Enumerable.Empty<PlayerBok>())
-            })
-            .Select(x => new PlayerDto(
-                x.Player.Id,
-                x.Player.Level,
-                x.Player.Experience,
-                x.Player.BokCoins,
-                x.Player.BokBank,
-                x.Hp, x.Atk, x.Def))
-            .ToList();
-
-        var bokFlow = BokFlow<ImmutableList<PlayerDto>>.Create(playerDtos.ToImmutableList());
-        var bokInFlow = await applicationDbContext.Boks.SingleOrDefaultAsync(x => x.Id == BokIdentify.ASPNET, cancellationToken)
-            ?? throw new Exception();
-        bokFlow.AddBok(bokInFlow);
-
-        return TypedResults.Ok(bokFlow);
-    }
+    private async Task<Ok<BokFlow<IEnumerable<PlayerDto>>>> Get(
+        ISender sender,
+        CancellationToken cancellationToken) => TypedResults.Ok(await sender.Send(new GetPlayersQuery(), cancellationToken));
 
     private async Task<Results<Ok<Guid>, BadRequest>> Register(
         ApplicationDbContext applicationDbContext,
