@@ -26,6 +26,8 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     /// <inheritdoc />
     public void Configure(SwaggerGenOptions options)
     {
+        options.SchemaFilter<EnumSchemaFilter>();
+        options.UseInlineDefinitionsForEnums();
         // add a swagger document for each discovered API version
         // note: you might choose to skip or document deprecated API versions differently
         foreach (var description in _provider.ApiVersionDescriptions)

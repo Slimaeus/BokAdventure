@@ -4,6 +4,7 @@ using BokAdventure.Domain.Enumerations;
 using BokAdventure.Persistence;
 using Carter;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Immutable;
 
 namespace BokAdventure.Api.UseCases.v1;
@@ -32,11 +33,13 @@ public sealed class Boks : ICarterModule
         group.MapGet("{id}", GetById);
     }
     public Ok<ImmutableList<Bok>> Get(
-        ApplicationDbContext appllicationDbContext)
-        => TypedResults.Ok(appllicationDbContext.Boks.ToImmutableList());
+        ApplicationDbContext appllicationDbContext,
+        [FromQuery] BokType type)
+        => TypedResults.Ok(appllicationDbContext.Boks
+            .Where(x => type == BokType.None || x.Type == type).ToImmutableList());
 
     public async Task<Ok<Bok>> GetById(
         ApplicationDbContext appllicationDbContext,
-        BokIdentify id)
+        [FromRoute] BokIdentify id)
         => TypedResults.Ok(await appllicationDbContext.Boks.FindAsync(id));
 }

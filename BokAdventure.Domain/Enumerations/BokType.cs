@@ -7,5 +7,6 @@ public enum BokType
     Client,
     Database,
     Cache,
-    Broker
+    Broker,
+    None
 }

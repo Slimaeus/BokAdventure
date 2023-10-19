@@ -36,6 +36,7 @@ public static partial class ConfigureServices
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddSwaggerGen(options =>
         {
+
             options.OperationFilter<SwaggerDefaultValues>();
             var securitySchema = new OpenApiSecurityScheme
             {
@@ -65,6 +66,7 @@ public static partial class ConfigureServices
 
         services.Configure<JsonOptions>(options =>
         {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
