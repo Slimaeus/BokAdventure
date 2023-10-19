@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Players\Commands\" />
-    <Folder Include="Users\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,10 +15,12 @@
     <PackageReference Include="FluentValidation" Version="11.8.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
     <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BokAdventure.Domain\BokAdventure.Domain.csproj" />
+    <ProjectReference Include="..\BokAdventure.Infrastructure\BokAdventure.Infrastructure.csproj" />
     <ProjectReference Include="..\BokAdventure.Persistence\BokAdventure.Persistence.csproj" />
   </ItemGroup>
 

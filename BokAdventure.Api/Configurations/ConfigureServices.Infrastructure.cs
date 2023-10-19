@@ -1,6 +1,7 @@
 ﻿using BokAdventure.Domain.Entities;
 using BokAdventure.Domain.Interfaces;
 using BokAdventure.Infrastructure.Authentication.Token;
+using BokAdventure.Infrastructure.Authentication.User;
 using BokAdventure.Infrastructure.Boks;
 using BokAdventure.Infrastructure.Constants;
 using BokAdventure.Persistence;
@@ -49,6 +50,23 @@ public static partial class ConfigureServices
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var hasToken = context.Request.Cookies.TryGetValue(InfrastructureConstants.CookieUserToken, out var token);
+                        if (hasToken && !string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+                        var canGetAccessToken = context.Request.Query.TryGetValue("access_token", out var accessToken);
+                        if (canGetAccessToken)
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -60,6 +78,9 @@ public static partial class ConfigureServices
                 };
             });
 
+        services.AddHttpContextAccessor();
+
+        services.AddTransient<IUserAccessor, UserAccessor>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IBokFlowService, BokFlowService>();
 
