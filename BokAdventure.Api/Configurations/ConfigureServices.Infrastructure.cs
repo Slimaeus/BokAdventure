@@ -1,6 +1,7 @@
 ﻿using BokAdventure.Domain.Entities;
 using BokAdventure.Domain.Interfaces;
 using BokAdventure.Infrastructure.Authentication.Token;
+using BokAdventure.Infrastructure.Boks;
 using BokAdventure.Infrastructure.Constants;
 using BokAdventure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,6 +61,7 @@ public static partial class ConfigureServices
             });
 
         services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<IBokFlowService, BokFlowService>();
 
         return services;
     }
